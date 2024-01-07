@@ -1,15 +1,26 @@
 import requests
 import json
 import ast
+import codecs
 from bs4 import BeautifulSoup
 import os
-
+from pathlib import Path
 #packages to install : bst:beautifulsoup,
 #packages used : requests, os, json,bs4
 
-paths = input('input the location you wish to atore the data, eg, C:\\Users\\user\Documents\python_project/')
+paths = str(Path.cwd());
+list = ['en', 'es', 'vi', 'ru', 'fr', 'pl','de']
+#the list of langu
 
-list = ['en', 'es', 'vi', 'ru', 'fr', 'pl']
+mlist = ''
+for m in list:
+    rmlist = list[list.index(m)]
+    if( list.index(m) > 0):
+        mlist = mlist + ',' + rmlist
+    else:
+        mlist = mlist + rmlist
+
+
 #must read
 #the above is to be edited' var list , a list of a the list of country language code is to filled in the array
 #remember you are using my api key, please responsibly. or add yours
@@ -22,7 +33,7 @@ def run(url,name):
     def getTran(text):
         url = "https://microsoft-translator-text.p.rapidapi.com/translate"
 
-        querystring = {"to[0]": "es,vi,ru,fr,pl", "api-version": "3.0", "profanityAction": "NoAction",
+        querystring = {"to[0]": mlist, "api-version": "3.0", "profanityAction": "NoAction",
                        "textType": "plain"}
 
         payload = [{"Text": text}]
@@ -35,20 +46,18 @@ def run(url,name):
         response = requests.post(url, json=payload, headers=headers, params=querystring)
         results = response.json()
         translation = results[0]['translations']
-
+        trtext = {}
         #remember this is a custom code
-        estext = translation[0]['text']
-        vitext = translation[1]['text']
-        rutext = translation[2]['text']
-        frtext = translation[3]['text']
-        pltext = translation[4]['text']
-        trtext = {'es':estext,'vi':vitext,'ru':rutext,'fr':frtext,'pl':pltext}
-        #the is the end of my custom code
 
+        for tx in list:
+            trtext[tx] = translation[list.index(tx)]['text']
+
+        #the is the end of my custom code
+        # print(trtext)
         return trtext
 
     #the below scraps the data from your website
-    def get_scores(url, filee):
+    def get_text(url, filee):
         response = requests.get(url)
         soup = BeautifulSoup(response.text, 'html5lib')
         extract = {}
@@ -62,10 +71,11 @@ def run(url,name):
                     extract = extract | {p.text.replace(" ", ""): p.text}
             else:
                 for p in soup.find_all('p'):
-                    extract = extract | {p.text.replace(" ", ""): getTran(p.text)[l]}
+                    translated_txt = codecs.decode(getTran(p.text)[l], 'unicode_escape')
+                    extract = extract | {p.text.replace(" ", ""): translated_txt}
                     # print(getTran(p.text)[l])
 
-            path = paths  + l
+            path = paths +  r'/'  + l
             # Create the directory
             os.makedirs(path, exist_ok=True)
             filename = filee+'.json'
@@ -73,12 +83,26 @@ def run(url,name):
                 json.dump(extract, fp)
 
     # Use the function
-    return get_scores(url,name)
+    return get_text(url,name)
 #list of url and nname of file you want store the data as
 #key url as the url of the page
 #key name as the url of the page
-#examples : path = [{'url':'https://www.sfcsports01.com/dashboard/codesetting','name':'codesetting'},{'url':'https://www.sfcsports01.com/dashboard/transactions','name':'transactions'}]
-pages = []
-for p in pages:
-    run(p['url'],p['name'])
+#examples : pages = [{'url':'https://www.sfcsports01.com/dashboard/codesetting','name':'codesetting'},{'url':'https://www.sfcsports01.com/dashboard/transactions','name':'transactions'}]
+# pages = [{'url':'https://www.wikipedia.com','name':'wiki'}]
+# for p in pages:
+pd = True
+px = input("input the website's url : ")
+pn = input("what name do you wish to name the data file ? : ")
+
+def vo():
+    run(px,pn)
+    pr = input("do you want to generate data for another page ? yes/no (y/n) : ")
+    if (pr == 'y' or pr == 'Y' or pr == 'yes' or pr == 'Yes' or pr == 'YES'):
+        vo();
+    else:
+        print("Thanks for Using my tool, please give a STAR on GITHUB")
+vo()
+
+
+
 #this is the end of the code, more updates will appear soonest.
