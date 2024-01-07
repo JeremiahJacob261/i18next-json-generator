@@ -19,20 +19,22 @@ list = ['en', 'es', 'vi', 'ru', 'fr', 'pl','de']
 1. INSTALL BeautifulSoup: https://pypi.org/project/beautifulsoup4/
 
 ```sh
+
 pip install beautifulsoup4
+
 ```
 
 2. RUN The File
-   ```sh
-   python ./translate-fetcher.py
-   ```
+```sh
+
+python ./translate-fetcher.py
+
+```
 3. Follow the instructions given in the terminal
 4. Don't forget to give this REPO a STAR
    
    
 <p>
-Line 40 - 45, is custom code, later versions of this tool will be better with a more developer friemdly way of use this tool. Please comments have been attched to the code to explain how it works
-
 The code creates folders with the language code name, which includes Json Files from different pages, 🙂
 
 hit me up on my gmail for more questions or </p>
